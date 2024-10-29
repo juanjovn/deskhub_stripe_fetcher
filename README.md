@@ -2,6 +2,8 @@
 
 A simple Node.js and Express application that provides a GET endpoint to fetch and display your Stripe revenue over various date ranges.
 
+You can get a DeskHub [here](https://getdeskhub.com)
+
 ## Setup Instructions
 
 ### Prerequisites
