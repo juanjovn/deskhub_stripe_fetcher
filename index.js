@@ -37,8 +37,8 @@ app.get('/stripe_revenue', async (req, res) => {
   const startTime = getTimeRange();
   const endTime = Math.floor(Date.now() / 1000);
 
-  console.log('Start Time:', startTime ? new Date(startTime * 1000) : 'N/A');
-  console.log('End Time:', new Date(endTime * 1000));
+//   console.log('Start Time:', startTime ? new Date(startTime * 1000) : 'N/A');
+//   console.log('End Time:', new Date(endTime * 1000));
 
   let charges = [];
   let hasMore = true;
@@ -55,7 +55,7 @@ app.get('/stripe_revenue', async (req, res) => {
       const response = await stripe.charges.list(params);
 
       // Log the fetched charges
-      console.log('Fetched charges:', response.data);
+    //   console.log('Fetched charges:', response.data);
 
       charges = charges.concat(response.data);
       hasMore = response.has_more;
