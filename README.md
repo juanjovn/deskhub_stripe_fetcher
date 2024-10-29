@@ -91,7 +91,7 @@ Sample Response
 
 #### RevenueCat Endpoint
 
-GET /revenuecat_metric
+GET /revenuecat
 
 Query Parameters
 
@@ -106,33 +106,33 @@ Examples
 
 1.	Revenue in the Last 28 Days
 
-http://localhost:3000/revenuecat_metric?output_type=revenue
+http://localhost:3000/revenuecat?output_type=revenue
 
 
 2.	Active Subscriptions
 
-http://localhost:3000/revenuecat_metric?output_type=active_subscriptions
+http://localhost:3000/revenuecat?output_type=active_subscriptions
 
 
 3.	New Customers in the Last 28 Days
 
-http://localhost:3000/revenuecat_metric?output_type=new_customers
+http://localhost:3000/revenuecat?output_type=new_customers
 
 
 
 Sample Response
 
 {
-  "short_value": "$569",
-  "long_value": "The revenue in the last 28 days is $569.00"
+  "short": "$569",
+  "long": "The revenue in the last 28 days is $569.00"
 }
 
-	•	short_value: A concise representation of the metric.
-	•	long_value: A friendly message including the metric name and value.
+	•	short: A concise representation of the metric.
+	•	long: A friendly message including the metric name and value.
 
 ### DeskHub Dashboard
 
  - Paste your service URL with the date range you want.
- - Select the JSON Key to be displayed. Mind that if you make millions or if you select long_revenue you may have to check "Enable Scrolling"
+ - Select the JSON Key to be displayed. Mind that if you make millions or if you select 'long' you may have to check "Enable Scrolling"
 
 ### Let's fill your DeskHub with money! 🤑
