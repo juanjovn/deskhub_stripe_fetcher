@@ -76,12 +76,12 @@ http://localhost:3000/stripe_revenue?date_range=month
 Sample Response
 
 {
-  "short_revenue": "$1,234.56",
-  "long_revenue": "This month I made $1,234.56"
+  "short": "$1,234.56",
+  "long": "This month I made $1,234.56"
 }
 
-	•	short_revenue: A concise representation of the revenue.
-	•	long_revenue: A friendly message including the revenue and date range.
+	•	short: A concise representation of the revenue.
+	•	long: A friendly message including the revenue and date range.
 
 ### DeskHub Dashboard
 

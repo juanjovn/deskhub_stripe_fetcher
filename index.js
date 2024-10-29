@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const stripe = require('stripe')(process.env.STRIPE_API_KEY);
+const axios = require('axios');
 
 app.get('/stripe_revenue', async (req, res) => {
     const dateRange = req.query.date_range || 'all';
@@ -141,14 +142,105 @@ app.get('/stripe_revenue', async (req, res) => {
         }
 
         res.json({
-            short_revenue: shortRevenue,
-            long_revenue: longMessage,
+            short: shortRevenue,
+            long: longMessage,
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred' });
     }
 });
+
+app.get('/revenuecat', async (req, res) => {
+    const outputType = req.query.output_type || 'revenue';
+
+    const validOutputTypes = [
+        'mrr',
+        'revenue',
+        'new_customers',
+        'active_subscriptions',
+        'active_trials',
+    ];
+
+    if (!validOutputTypes.includes(outputType)) {
+        return res.status(400).json({ error: 'Invalid output_type parameter' });
+    }
+
+    const url = `https://api.revenuecat.com/v2/projects/${process.env.PROJECT_ID}/metrics/overview`;
+
+    try {
+        const headers = {
+            'Authorization': `Bearer ${process.env.REVENUECAT_API_KEY}`,
+            'Accept': 'application/json',
+        };
+
+        const response = await axios.get(url, { headers });
+        const metrics = response.data.metrics;
+
+        // Find the metric that matches the outputType
+        const metric = metrics.find((m) => m.id === outputType);
+
+        if (!metric) {
+            return res.status(404).json({ error: 'Metric not found' });
+        }
+
+        const value = metric.value || 0;
+        const unit = metric.unit || '';
+
+        // Format the amount
+        let formattedAmount;
+        if (unit === '$') {
+            formattedAmount = value.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+            });
+        } else {
+            formattedAmount = value.toLocaleString('en-US');
+        }
+
+        // Function to format short_value
+        function formatShortValue(amount, unit) {
+            if (unit === '$') {
+                if (amount >= 1000000) {
+                    const compactAmount = (amount / 1000000).toFixed(1);
+                    return `$${compactAmount}M`;
+                } else if (amount >= 10000) {
+                    const compactAmount = (amount / 1000).toFixed(1);
+                    return `$${compactAmount}K`;
+                } else {
+                    return amount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                    });
+                }
+            } else {
+                // For units without currency
+                return amount.toLocaleString('en-US');
+            }
+        }
+
+        const shortValue = formatShortValue(value, unit);
+
+        // Construct the long message with adjustments
+        let longMessage;
+        if (outputType === 'new_customers' || outputType === 'revenue') {
+            longMessage = `The ${metric.name.toLowerCase()} in the last 28 days is ${formattedAmount}`;
+        } else {
+            longMessage = `The ${metric.name.toLowerCase()} is ${formattedAmount}`;
+        }
+
+        res.json({
+            short: shortValue,
+            long: longMessage,
+        });
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'An error occurred' });
+    }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
